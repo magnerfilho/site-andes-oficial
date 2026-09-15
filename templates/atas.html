@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Atas de Registro de Preços | Grupo Andes{% endblock %}
+
+{% block content %}
+<section>
+    <div class="intro-pagina">
+        <h1>Atas de Registro de Preços</h1>
+        <p class="lead">A ata de registro de preços permite que órgãos públicos contratem com valores e condições já registrados, com mais previsibilidade.</p>
+    </div>
+
+    <h2>Como funciona</h2>
+    <div class="passos">
+        <article class="passo">
+            <span>1</span>
+            <h3>Consulte a ata</h3>
+            <p>Identifique o objeto, o órgão gerenciador e a vigência da ata de interesse.</p>
+        </article>
+        <article class="passo">
+            <span>2</span>
+            <h3>Confirme a adesão</h3>
+            <p>Sua entidade verifica a possibilidade de adesão e os quantitativos disponíveis.</p>
+        </article>
+        <article class="passo">
+            <span>3</span>
+            <h3>Fale com a Andes</h3>
+            <p>Nossa equipe orienta o próximo passo e o fornecimento dos itens.</p>
+        </article>
+    </div>
+
+    <h2>Atas disponíveis</h2>
+    <table class="tabela-atas">
+        <thead>
+            <tr>
+                <th>Ata</th>
+                <th>Órgão</th>
+                <th>Objeto</th>
+                <th>Ano</th>
+                <th>Documento</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>SRP 056/2026</td>
+                <td>PMERJ — Batalhão de Armamento, Rio de Janeiro/RJ</td>
+                <td>Carro plataforma</td>
+                <td>2026</td>
+                <td>
+                    <a class="link-documento" href="{{ url_for('static', filename='documentos/atas/ata-srp-056-2026-rj-carro-plataforma.pdf') }}" target="_blank" rel="noopener noreferrer">Abrir PDF</a>
+                </td>
+            </tr>
+            <tr>
+                <td>SRP 010/2026</td>
+                <td>Prefeitura de São José do Mantimento/MG</td>
+                <td>Lixeiras</td>
+                <td>2026</td>
+                <td>
+                    <a class="link-documento" href="{{ url_for('static', filename='documentos/atas/ata-srp-010-2026-mg-lixeiras.pdf') }}" target="_blank" rel="noopener noreferrer">Abrir PDF</a>
+                </td>
+            </tr>
+            <tr>
+                <td>Ata 28/2025</td>
+                <td>ALEGO, Goiânia/GO</td>
+                <td>Válvula de alívio de pressão CLA-VAL 50B-4KG1</td>
+                <td>2025</td>
+                <td>
+                    <a class="link-documento" href="{{ url_for('static', filename='documentos/atas/ata-28-2025-go-alego-valvula.pdf') }}" target="_blank" rel="noopener noreferrer">Abrir PDF</a>
+                </td>
+            </tr>
+            <tr>
+                <td>SRP 021/2025</td>
+                <td>Prefeitura de Conselheiro Lafaiete/MG</td>
+                <td>Climatizador</td>
+                <td>2025</td>
+                <td>
+                    <a class="link-documento" href="{{ url_for('static', filename='documentos/atas/ata-srp-021-2025-mg-climatizador.pdf') }}" target="_blank" rel="noopener noreferrer">Abrir PDF</a>
+                </td>
+            </tr>
+            <tr>
+                <td>Contrato / Ata RP</td>
+                <td>Prefeitura de Teutônia/RS</td>
+                <td>Torneira e válvula</td>
+                <td>—</td>
+                <td>
+                    <a class="link-documento" href="{{ url_for('static', filename='documentos/atas/ata-rp-rs-teutonia-torneira-valvula.pdf') }}" target="_blank" rel="noopener noreferrer">Abrir PDF</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="aviso">Clique em Abrir PDF para consultar o documento da ata.</p>
+</section>
+{% endblock %}

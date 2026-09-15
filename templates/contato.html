@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Fale com a Andes | Grupo Andes{% endblock %}
+
+{% block content %}
+<section>
+    <div class="intro-pagina">
+        <h1>Fale com a Andes</h1>
+        <p class="lead">Preencha o formulário abaixo ou use um dos canais. O formulário é ilustrativo e ainda não envia mensagem para um servidor.</p>
+    </div>
+
+    <div class="grade-contato">
+        <div class="cartoes-contato">
+            <article class="cartao-contato">
+                <h3>E-mail</h3>
+                <p><a href="mailto:contato@grupoandes.com.br">contato@grupoandes.com.br</a></p>
+            </article>
+            <article class="cartao-contato">
+                <h3>WhatsApp</h3>
+                <p><a href="https://wa.me/5562992272067" target="_blank" rel="noopener noreferrer">(62) 99227-2067</a></p>
+            </article>
+            <article class="cartao-contato">
+                <h3>Telefone</h3>
+                <p><a href="tel:+5562992272067">(62) 99227-2067</a></p>
+            </article>
+        </div>
+
+        <form class="formulario-contato" action="#" method="post">
+            <label>
+                Nome
+                <input type="text" name="nome" autocomplete="name" required>
+            </label>
+            <label>
+                E-mail
+                <input type="email" name="email" autocomplete="email" required>
+            </label>
+            <label>
+                Telefone
+                <input type="tel" name="telefone" autocomplete="tel">
+            </label>
+            <label>
+                Mensagem
+                <textarea name="mensagem" required></textarea>
+            </label>
+            <button class="botao botao-principal" type="submit">Enviar mensagem</button>
+            <p class="aviso">Este envio não grava dados. Use o e-mail ou o WhatsApp para contato real.</p>
+        </form>
+    </div>
+</section>
+{% endblock %}

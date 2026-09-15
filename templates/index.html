@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Grupo Andes{% endblock %}
+
+{% block main_attrs %}class="pagina-inicio"{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="conteudo">
+        <h1>Grupo Andes</h1>
+        <p class="lead">Soluções para entidades públicas: fornecimento organizado, atas de registro de preços e atendimento direto ao setor público.</p>
+        <div class="hero-acoes">
+            <a class="botao botao-principal" href="{{ url_for('products') }}">Ver produtos</a>
+            <a class="botao botao-secundario" href="{{ url_for('contact') }}">Fale com a Andes</a>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="conteudo">
+        <h2>Como podemos ajudar</h2>
+        <p class="lead">Conheça a empresa, os departamentos de produtos e as atas disponíveis para órgãos públicos.</p>
+        <div class="grade-cards">
+            <article class="card">
+                <h3>Sobre nós</h3>
+                <p>Empresa especializada em soluções de fornecimento para o setor público, com foco em clareza e atendimento.</p>
+                <a href="{{ url_for('about') }}">Conhecer o Grupo Andes</a>
+            </article>
+            <article class="card">
+                <h3>Produtos</h3>
+                <p>Departamentos de descartáveis, equipamentos, informática, materiais elétricos, segurança e mais.</p>
+                <a href="{{ url_for('products') }}">Ver departamentos</a>
+            </article>
+            <article class="card">
+                <h3>Atas de Registro de Preços</h3>
+                <p>Consulte atas para adesão e contratação com previsibilidade de preço e prazo.</p>
+                <a href="{{ url_for('price_records') }}">Ver atas</a>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="faixa-contato">
+    <div class="conteudo">
+        <div>
+            <h2>Fale com a Andes</h2>
+            <p>E-mail, WhatsApp ou telefone. Nossa equipe atende órgãos e entidades públicas.</p>
+        </div>
+        <div class="cta-acoes">
+            <a class="botao botao-principal" href="{{ url_for('contact') }}">Enviar mensagem</a>
+            <a class="botao botao-contorno" href="https://wa.me/5562992272067" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

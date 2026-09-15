@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if categoria_atual %}
+        {{ categoria_atual.nome }} | Produtos | Grupo Andes
+    {% elif departamento_atual %}
+        {{ departamento_atual.nome }} | Produtos | Grupo Andes
+    {% else %}
+        Produtos | Grupo Andes
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<section>
+    <div class="intro-pagina">
+        <h1>Produtos e Departamentos</h1>
+        {% if categoria_atual %}
+            <p class="lead">{{ departamento_atual.nome }} — {{ categoria_atual.nome }}</p>
+        {% elif departamento_atual %}
+            <p class="lead">Produtos do departamento {{ departamento_atual.nome }}.</p>
+        {% else %}
+            <p class="lead">Clique em um departamento ou em uma subcategoria para ver os itens cadastrados no banco, com imagem, descrição e especificações.</p>
+        {% endif %}
+    </div>
+
+    <nav class="departamentos" aria-label="Departamentos de produtos">
+        <ul>
+            {% for departamento in departamentos %}
+                <li class="item-departamento">
+                    <a
+                        href="{{ url_for('products', departamento_slug=departamento.slug) }}"
+                        class="{{ 'ativo' if departamento_atual and departamento.slug == departamento_atual.slug else '' }}"
+                    >
+                        {{ departamento.nome }}
+                    </a>
+                    {% if departamento.categorias %}
+                        <ul class="submenu">
+                            {% for categoria in departamento.categorias %}
+                                <li>
+                                    <a
+                                        href="{{ url_for('products', departamento_slug=departamento.slug, categoria_slug=categoria.slug) }}"
+                                        class="{{ 'ativo' if categoria_atual and categoria.slug == categoria_atual.slug and departamento_atual and departamento.slug == departamento_atual.slug else '' }}"
+                                    >
+                                        {{ categoria.nome }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </nav>
+
+    {% if departamento_atual %}
+        {% if produtos %}
+            <div class="grade-produtos">
+                {% for produto in produtos %}
+                    <article class="card-produto">
+                        <img
+                            src="{{ url_for('static', filename='imagens/' + produto.imagem) }}"
+                            alt="{{ produto.nome }}"
+                        >
+                        <h2>{{ produto.nome }}</h2>
+                        {% if produto.categoria_nome %}
+                            <p class="card-produto-categoria">{{ produto.categoria_nome }}</p>
+                        {% endif %}
+                        <p>{{ produto.descricao }}</p>
+                        <h3>Especificações</h3>
+                        <ul>
+                            {% for especificacao in produto.lista_especificacoes %}
+                                <li>{{ especificacao }}</li>
+                            {% endfor %}
+                        </ul>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="estado-vazio">Nenhum item cadastrado neste recorte. Inclua linhas em dados/produtos.csv e rode python criar_banco.py.</p>
+        {% endif %}
+    {% endif %}
+</section>
+{% endblock %}
