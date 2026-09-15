@@ -27,6 +27,13 @@
     --logo-height: 52px;
     /* altura da foto ilustrativa no card do catálogo */
     --product-image-height: 180px;
+    /* altura das marcas na faixa Nossos clientes */
+    --client-logo-height: 72px;
+    /* quantos cards cabem na janela do carrossel */
+    --clients-visible: 4;
+    --clients-gap: 16px;
+    /* tamanho do botão de seta do carrossel */
+    --client-arrow-size: 44px;
 }
 
 html {
@@ -284,6 +291,125 @@ section:last-of-type {
 
 .card a:hover {
     color: var(--color-navy);
+}
+
+.faixa-clientes {
+    background-color: var(--color-surface-alt);
+}
+
+.faixa-clientes .lead {
+    margin-bottom: 28px;
+}
+
+.carrossel-clientes {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.seta-clientes {
+    flex-shrink: 0;
+    width: var(--client-arrow-size);
+    height: var(--client-arrow-size);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    background-color: var(--color-surface);
+    color: var(--color-navy);
+    cursor: pointer;
+    box-shadow: var(--shadow);
+}
+
+.seta-clientes svg {
+    width: 18px;
+    height: 18px;
+}
+
+.seta-clientes:hover,
+.seta-clientes:focus-visible {
+    background-color: var(--color-navy);
+    border-color: var(--color-navy);
+    color: var(--color-surface);
+    outline: none;
+}
+
+.seta-clientes:disabled {
+    opacity: 0.35;
+    cursor: default;
+    background-color: var(--color-surface);
+    border-color: var(--color-border);
+    color: var(--color-navy);
+    box-shadow: none;
+}
+
+.janela-clientes {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.trilha-clientes {
+    list-style: none;
+    display: flex;
+    gap: var(--clients-gap);
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+}
+
+.trilha-clientes::-webkit-scrollbar {
+    display: none;
+}
+
+.item-cliente {
+    margin: 0;
+    flex: 0 0 calc((100% - (var(--clients-visible) - 1) * var(--clients-gap)) / var(--clients-visible));
+    scroll-snap-align: start;
+}
+
+.item-cliente figure {
+    height: 100%;
+    margin: 0;
+    padding: 20px 14px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.item-cliente img {
+    height: var(--client-logo-height);
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.item-cliente figcaption {
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-navy);
+    line-height: 1.3;
+    min-height: 2.4em;
+}
+
+/* a marca oficial da GOINFRA vem com fundo preto */
+.item-cliente-escuro figure {
+    background-color: #111111;
+}
+
+.item-cliente-escuro figcaption {
+    color: var(--color-surface);
 }
 
 .faixa-contato {
@@ -628,6 +754,14 @@ footer {
         grid-template-columns: 1fr;
     }
 
+    .grade-clientes {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    :root {
+        --clients-visible: 2;
+    }
+
     .hero h1 {
         font-size: 2.1rem;
     }
@@ -664,6 +798,10 @@ footer {
 
     .hero {
         padding: 64px 20px;
+    }
+
+    :root {
+        --clients-visible: 1;
     }
 
     /* no toque, hover não funciona: subcategorias ficam visíveis */

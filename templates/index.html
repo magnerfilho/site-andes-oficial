@@ -16,6 +16,37 @@
     </div>
 </section>
 
+<section class="faixa-clientes" aria-labelledby="titulo-clientes">
+    <div class="conteudo">
+        <h2 id="titulo-clientes">Nossos clientes</h2>
+        <p class="lead">Órgãos e entidades públicas que já adquiriram com o Grupo Andes.</p>
+        <div class="carrossel-clientes">
+            <button class="seta-clientes seta-clientes-esquerda" type="button" aria-label="Ver clientes anteriores">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M15.5 5.5 8.5 12l7 6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
+            <div class="janela-clientes">
+                <ul class="trilha-clientes">
+                    {% for cliente in clientes %}
+                    <li class="item-cliente{% if cliente.dark_background %} item-cliente-escuro{% endif %}">
+                        <figure>
+                            <img src="{{ url_for('static', filename=cliente.image) }}" alt="{{ cliente.alt }}">
+                            <figcaption>{{ cliente.caption }}</figcaption>
+                        </figure>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <button class="seta-clientes seta-clientes-direita" type="button" aria-label="Ver mais clientes">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M8.5 5.5 15.5 12l-7 6.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+</section>
+
 <section>
     <div class="conteudo">
         <h2>Como podemos ajudar</h2>

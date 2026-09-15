@@ -7,6 +7,80 @@ app = Flask(__name__)
 
 DATABASE_PATH = 'banco_produtos.db'
 ALL_PRODUCTS_SLUG = 'exibir-tudo'
+HOME_CLIENTS = [
+    {
+        'image': 'imagens/clientes/marinha.png',
+        'alt': 'Marinha do Brasil',
+        'caption': 'Marinha do Brasil',
+        'dark_background': False,
+    },
+    {
+        'image': 'imagens/clientes/ufmg.svg',
+        'alt': 'Universidade Federal de Minas Gerais',
+        'caption': 'UFMG',
+        'dark_background': False,
+    },
+    {
+        'image': 'imagens/clientes/estado-goias.svg',
+        'alt': 'Governo do Estado de Goiás',
+        'caption': 'Estado de Goiás',
+        'dark_background': False,
+    },
+    {
+        'image': 'imagens/clientes/goinfra.png',
+        'alt': 'GOINFRA — Agência Goiana de Infraestrutura e Transportes',
+        'caption': 'GOINFRA-GO',
+        'dark_background': True,
+    },
+    {
+        'image': 'imagens/clientes/bombeiros-go.png',
+        'alt': 'Corpo de Bombeiros Militar do Estado de Goiás',
+        'caption': 'CBMGO',
+        'dark_background': False,
+    },
+    {
+        'image': 'imagens/clientes/mp-go.png',
+        'alt': 'Ministério Público do Estado de Goiás',
+        'caption': 'MP-GO',
+        'dark_background': True,
+    },
+    {
+        'image': 'imagens/clientes/seduc-go.png',
+        'alt': 'Secretaria de Estado da Educação de Goiás',
+        'caption': 'SEDUC-GO',
+        'dark_background': False,
+    },
+    {
+        'image': 'imagens/clientes/policia-penal-go.png',
+        'alt': 'Polícia Penal do Estado de Goiás',
+        'caption': 'Polícia Penal-GO',
+        'dark_background': False,
+    },
+    {
+        'image': 'imagens/clientes/ueg-oficial.png',
+        'alt': 'Universidade Estadual de Goiás',
+        'caption': 'UEG',
+        'dark_background': True,
+    },
+    {
+        'image': 'imagens/clientes/ufg.png',
+        'alt': 'Universidade Federal de Goiás',
+        'caption': 'UFG',
+        'dark_background': False,
+    },
+    {
+        'image': 'imagens/clientes/crp-rj.png',
+        'alt': 'Conselho Regional de Psicologia do Estado do Rio de Janeiro',
+        'caption': 'CRP-RJ',
+        'dark_background': False,
+    },
+    {
+        'image': 'imagens/clientes/saev.svg',
+        'alt': 'SAEV — Superintendência de Água, Esgoto e Meio Ambiente de Votuporanga',
+        'caption': 'SAEV Votuporanga',
+        'dark_background': False,
+    },
+]
 
 
 def get_connection():
@@ -133,7 +207,11 @@ def load_products(department_slug=None, category_slug=None):
 
 @app.route('/')
 def home():
-    return render_template('index.html', pagina_ativa='inicio')
+    return render_template(
+        'index.html',
+        pagina_ativa='inicio',
+        clientes=HOME_CLIENTS,
+    )
 
 
 @app.route('/sobre')
