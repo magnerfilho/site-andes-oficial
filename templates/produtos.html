@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
 {% block title %}
-    {% if categoria_atual %}
+    {% if exibir_tudo %}
+        Todos os produtos | Grupo Andes
+    {% elif categoria_atual %}
         {{ categoria_atual.nome }} | Produtos | Grupo Andes
     {% elif departamento_atual %}
         {{ departamento_atual.nome }} | Produtos | Grupo Andes
@@ -14,12 +16,14 @@
 <section>
     <div class="intro-pagina">
         <h1>Produtos e Departamentos</h1>
-        {% if categoria_atual %}
+        {% if exibir_tudo %}
+            <p class="lead">Todos os itens cadastrados no catálogo.</p>
+        {% elif categoria_atual %}
             <p class="lead">{{ departamento_atual.nome }} — {{ categoria_atual.nome }}</p>
         {% elif departamento_atual %}
             <p class="lead">Produtos do departamento {{ departamento_atual.nome }}.</p>
         {% else %}
-            <p class="lead">Clique em um departamento ou em uma subcategoria para ver os itens cadastrados no banco, com imagem, descrição e especificações.</p>
+            <p class="lead">Clique em um departamento, em uma subcategoria ou em Exibir Tudo para ver os itens cadastrados.</p>
         {% endif %}
     </div>
 
@@ -49,10 +53,18 @@
                     {% endif %}
                 </li>
             {% endfor %}
+            <li class="item-departamento">
+                <a
+                    href="{{ url_for('products', departamento_slug=slug_todos) }}"
+                    class="{{ 'ativo' if exibir_tudo else '' }}"
+                >
+                    Exibir Tudo
+                </a>
+            </li>
         </ul>
     </nav>
 
-    {% if departamento_atual %}
+    {% if departamento_atual or exibir_tudo %}
         {% if produtos %}
             <div class="grade-produtos">
                 {% for produto in produtos %}
@@ -62,8 +74,10 @@
                             alt="{{ produto.nome }}"
                         >
                         <h2>{{ produto.nome }}</h2>
-                        {% if produto.categoria_nome %}
-                            <p class="card-produto-categoria">{{ produto.categoria_nome }}</p>
+                        {% if produto.departamento_nome %}
+                            <p class="card-produto-categoria">
+                                {{ produto.departamento_nome }}{% if produto.categoria_nome %} — {{ produto.categoria_nome }}{% endif %}
+                            </p>
                         {% endif %}
                         <p>{{ produto.descricao }}</p>
                         <h3>Especificações</h3>
@@ -76,7 +90,7 @@
                 {% endfor %}
             </div>
         {% else %}
-            <p class="estado-vazio">Nenhum item cadastrado neste recorte. Inclua linhas em dados/produtos.csv e rode python criar_banco.py.</p>
+            <p class="estado-vazio">Nenhum item cadastrado neste recorte.</p>
         {% endif %}
     {% endif %}
 </section>

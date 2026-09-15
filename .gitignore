@@ -2,3 +2,4 @@ __pycache__/
 *.db
 .venv/
 venv/
+dados/andes_produtos_base.json

@@ -6,6 +6,7 @@ from flask import Flask, abort, render_template
 app = Flask(__name__)
 
 DATABASE_PATH = 'banco_produtos.db'
+ALL_PRODUCTS_SLUG = 'exibir-tudo'
 
 
 def get_connection():
@@ -147,21 +148,24 @@ def products(departamento_slug=None, categoria_slug=None):
     departments = load_departments()
     selected_department = None
     selected_category = None
+    show_all_products = False
+    product_list = []
 
-    if departamento_slug:
+    if departamento_slug == ALL_PRODUCTS_SLUG:
+        if categoria_slug:
+            abort(404)
+        show_all_products = True
+        product_list = load_products()
+    elif departamento_slug:
         selected_department = find_department(departments, departamento_slug)
         if selected_department is None:
             abort(404)
 
-    if categoria_slug:
-        if selected_department is None:
-            abort(404)
-        selected_category = find_category(selected_department, categoria_slug)
-        if selected_category is None:
-            abort(404)
+        if categoria_slug:
+            selected_category = find_category(selected_department, categoria_slug)
+            if selected_category is None:
+                abort(404)
 
-    product_list = []
-    if departamento_slug:
         product_list = load_products(departamento_slug, categoria_slug)
 
     return render_template(
@@ -171,6 +175,8 @@ def products(departamento_slug=None, categoria_slug=None):
         produtos=product_list,
         departamento_atual=selected_department,
         categoria_atual=selected_category,
+        exibir_tudo=show_all_products,
+        slug_todos=ALL_PRODUCTS_SLUG,
     )
 
 

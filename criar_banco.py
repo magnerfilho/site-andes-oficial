@@ -1,9 +1,19 @@
 import csv
+import json
 import os
 import sqlite3
+import unicodedata
 
 DATABASE_PATH = 'banco_produtos.db'
 CSV_PATH = os.path.join('dados', 'produtos.csv')
+JSON_PATH = os.path.join('dados', 'andes_produtos_base.json')
+PLACEHOLDER_IMAGE = 'produtos/placeholder.svg'
+# limite do título no card para não estourar o layout
+TITLE_MAX_LENGTH = 90
+
+DEPARTMENT_ALIASES = {
+    'Telefonia e Comunicação': 'Telefone e Comunicação',
+}
 
 DEPARTMENTS = [
     (
@@ -86,6 +96,152 @@ DEPARTMENTS = [
 ]
 
 
+def normalize_text(value):
+    text = ' '.join((value or '').replace('\n', ' ').split()).lower()
+    decomposed = unicodedata.normalize('NFD', text)
+    return ''.join(character for character in decomposed if unicodedata.category(character) != 'Mn')
+
+
+def contains_any(text, keywords):
+    return any(keyword in text for keyword in keywords)
+
+
+def infer_subcategory(department_name, description):
+    text = normalize_text(description)
+
+    if department_name == 'Descartáveis e Embalagens':
+        if contains_any(text, ['cumbuca', 'copo']):
+            return 'Copos e Cumbucas'
+        if contains_any(text, ['sacola', 'filme']):
+            return 'Sacolas e Filmes'
+
+    if department_name == 'Eletrodomésticos e Equipamentos':
+        if contains_any(text, ['climatizador']):
+            return 'Climatizadores'
+        if contains_any(text, ['ventilador']):
+            return 'Ventiladores'
+        if contains_any(text, ['espremedor', 'triturador', 'multiprocessador']):
+            return 'Espremedores e Trituradores'
+        if contains_any(text, ['tanquinho', 'maquina de lavar', 'secadora']):
+            return 'Máquinas de Lavar'
+        if contains_any(text, ['bebedouro', 'bebedor', 'purificador']):
+            return 'Bebedores e Purificadores'
+
+    if department_name == 'Ferramentas e Construção':
+        if contains_any(text, ['acoplamento']):
+            return 'Acoplamentos'
+        if contains_any(text, ['carro plataforma', 'plataforma']):
+            return 'Carros Plataformas'
+        if contains_any(text, ['compressor', 'motocompressor']):
+            return 'Compressores e Motocompressores'
+        if contains_any(text, ['hidraulico', 'torneira', 'valvula', 'mangueira', 'tampao']):
+            return 'Materiais Hidráulicos'
+        return 'Ferramentas e Acessórios'
+
+    if department_name == 'Informática e Eletrônicos':
+        if contains_any(text, ['fragmentadora']):
+            return 'Fragmentadoras'
+        if contains_any(text, ['impressora', 'cartucho']):
+            return 'Impressoras e Suprimentos'
+        if contains_any(text, ['microfone', 'pedestal', 'caixa de som', 'acustica']):
+            return 'Equipamentos de Áudio'
+        return 'Equipamentos e Acessórios de Informática'
+
+    if department_name == 'Limpeza e Utilidades':
+        if contains_any(text, ['lixeira', 'lixo', 'cesto', 'balde']):
+            return 'Cestos e Lixeiras'
+
+    if department_name == 'Materiais Elétricos':
+        if contains_any(text, ['transformador']):
+            return 'Transformadores'
+        if contains_any(text, ['nobreak', 'estabilizador']):
+            return 'Estabilizadores e Nobreaks'
+        if contains_any(text, ['mouse', 'teclado', 'headset', 'microfone', 'caixa de som']):
+            return None
+        if 'cabo' in text:
+            return 'Cabos Elétricos'
+
+    if department_name == 'Segurança e Acessórios':
+        if contains_any(text, ['biciclet']):
+            return 'Bicicletários'
+        if contains_any(text, ['descensor', 'talabarte']):
+            return 'Descensores e Talabartes'
+
+    if department_name == 'Telefone e Comunicação':
+        if contains_any(text, ['galaxy', 'celular', 'smartphone']):
+            return 'Aparelhos Celulares'
+        return 'Telefonia'
+
+    return None
+
+
+def clean_description(text):
+    cleaned = ' '.join((text or '').replace('\n', ' ').split())
+    if cleaned.count('-') >= 4 and cleaned.count(' ') <= 2:
+        cleaned = cleaned.replace('-', ' ')
+    return cleaned
+
+
+def build_title(brand, description):
+    title = description
+    period_index = title.find('. ')
+    if 20 <= period_index <= TITLE_MAX_LENGTH:
+        title = title[:period_index]
+    elif len(title) > TITLE_MAX_LENGTH:
+        title = title[: TITLE_MAX_LENGTH - 3].rstrip() + '...'
+
+    if brand and brand.lower() not in title.lower():
+        return f'{brand} — {title}'
+    return title
+
+
+def load_catalog_from_json():
+    if not os.path.exists(JSON_PATH):
+        raise FileNotFoundError(f'JSON não encontrado: {JSON_PATH}')
+
+    with open(JSON_PATH, 'r', encoding='utf-8') as json_file:
+        rows = json.load(json_file)
+
+    catalog = []
+    seen = set()
+
+    for row in rows:
+        department_name = DEPARTMENT_ALIASES.get(row.get('Categoria'), row.get('Categoria'))
+        if department_name not in {item[0] for item in DEPARTMENTS}:
+            department_name = 'Outros'
+
+        description = clean_description(row.get('Descrição Limpa') or row.get('Descrição Original'))
+        brand = (row.get('Marca') or '').strip()
+        unique_key = (brand.lower(), description.lower())
+        if unique_key in seen or not description:
+            continue
+        seen.add(unique_key)
+
+        category_name = infer_subcategory(department_name, description) or ''
+        catalog.append(
+            {
+                'departamento': department_name,
+                'categoria': category_name,
+                'nome': build_title(brand, description),
+                'descricao': description,
+                'especificacoes': f'Marca: {brand}' if brand else 'Marca: não informada',
+                'imagem': PLACEHOLDER_IMAGE,
+            }
+        )
+
+    return catalog
+
+
+def write_catalog_csv(catalog):
+    with open(CSV_PATH, 'w', encoding='utf-8', newline='') as csv_file:
+        writer = csv.DictWriter(
+            csv_file,
+            fieldnames=['departamento', 'categoria', 'nome', 'descricao', 'especificacoes', 'imagem'],
+        )
+        writer.writeheader()
+        writer.writerows(catalog)
+
+
 def create_tables(cursor):
     cursor.execute('DROP TABLE IF EXISTS produtos')
     cursor.execute('DROP TABLE IF EXISTS categorias')
@@ -153,52 +309,50 @@ def seed_departments(cursor):
     return department_ids, category_ids
 
 
-def seed_products(cursor, department_ids, category_ids):
-    if not os.path.exists(CSV_PATH):
-        raise FileNotFoundError(f'CSV não encontrado: {CSV_PATH}')
+def seed_products(cursor, department_ids, category_ids, catalog):
+    for row in catalog:
+        department_name = row['departamento']
+        category_name = row['categoria']
+        department_id = department_ids.get(department_name)
 
-    with open(CSV_PATH, 'r', encoding='utf-8-sig', newline='') as csv_file:
-        reader = csv.DictReader(csv_file)
-        for row in reader:
-            department_name = row['departamento'].strip()
-            category_name = row['categoria'].strip()
-            department_id = department_ids.get(department_name)
+        if department_id is None:
+            print(f'[AVISO] Departamento ignorado: {department_name}')
+            continue
 
-            if department_id is None:
-                print(f'[AVISO] Departamento ignorado no CSV: {department_name}')
-                continue
+        category_id = None
+        if category_name:
+            category_id = category_ids.get((department_name, category_name))
+            if category_id is None:
+                print(f'[AVISO] Categoria ignorada: {category_name}')
 
-            category_id = None
-            if category_name:
-                category_id = category_ids.get((department_name, category_name))
-                if category_id is None:
-                    print(f'[AVISO] Categoria ignorada no CSV: {category_name}')
-
-            cursor.execute(
-                '''
-                INSERT INTO produtos (
-                    departamento_id, categoria_id, nome, descricao, especificacoes, imagem
-                )
-                VALUES (?, ?, ?, ?, ?, ?)
-                ''',
-                (
-                    department_id,
-                    category_id,
-                    row['nome'].strip(),
-                    row['descricao'].strip(),
-                    row['especificacoes'].strip(),
-                    row['imagem'].strip(),
-                ),
+        cursor.execute(
+            '''
+            INSERT INTO produtos (
+                departamento_id, categoria_id, nome, descricao, especificacoes, imagem
             )
+            VALUES (?, ?, ?, ?, ?, ?)
+            ''',
+            (
+                department_id,
+                category_id,
+                row['nome'],
+                row['descricao'],
+                row['especificacoes'],
+                row['imagem'],
+            ),
+        )
 
 
 def main():
+    catalog = load_catalog_from_json()
+    write_catalog_csv(catalog)
+
     connection = sqlite3.connect(DATABASE_PATH)
     cursor = connection.cursor()
 
     create_tables(cursor)
     department_ids, category_ids = seed_departments(cursor)
-    seed_products(cursor, department_ids, category_ids)
+    seed_products(cursor, department_ids, category_ids, catalog)
 
     connection.commit()
     cursor.execute('SELECT COUNT(*) FROM produtos')
